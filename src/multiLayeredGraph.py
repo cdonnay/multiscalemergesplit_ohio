@@ -69,6 +69,7 @@ def setDownNbrs(state, downNbrs, cNode, cLevel, nbr, nLevel):
     fineGraph = state["layeredGraph"]["graphLevels"][nLevel]
 
     cDesc = nestedHierarchy[cLevel]
+    # print("cDesc", cDesc)
 
     if nLevel == cLevel:
         edges = coarseGraph.number_of_edges(cNode, nbr)
@@ -78,7 +79,7 @@ def setDownNbrs(state, downNbrs, cNode, cLevel, nbr, nLevel):
             if fineGraph.nodes[nnbr][cDesc] == cNode:
                 edges += fineGraph.number_of_edges(nnbr, nbr)
 
-    # print("setDownNbrs", cNode, cLevel, nbr, nLevel)
+    # print("setDownNbrs", cNode, cLevel, nbr, nLevel, edges)
 
     if nLevel == 0:
         downNbrs[nbr] = [edges, {}]
@@ -86,8 +87,9 @@ def setDownNbrs(state, downNbrs, cNode, cLevel, nbr, nLevel):
         ddownNbrs = {}
         finerGraph = state["layeredGraph"]["graphLevels"][nLevel-1]
 
-        # print("nested elements of nbr", fineGraph.node[nbr]["nestedElements"])
-        for nestedNode in fineGraph.node[nbr]["nestedElements"]:
+        # print("nbr", nbr)
+        # print("nested elements of nbr", fineGraph.nodes[nbr]["nestedElements"])
+        for nestedNode in fineGraph.nodes[nbr]["nestedElements"]:
             coarseNeighbor = False
             for nstNbr in finerGraph.neighbors(nestedNode):
                 if finerGraph.nodes[nstNbr][cDesc] == cNode:
@@ -195,6 +197,7 @@ def buildCrossHeirarchyEdges(state):
             for cNbr in coarseGraph.neighbors(cNode):
                 # print("coarse neighbor", cNbr)
                 downNbrs = {}
+                # print("calling set down nbrs", cNbr, level, cNode, level)
                 downNbrs = setDownNbrs(state, downNbrs, cNode, level, 
                                        cNbr, level)
                 coarseGraph.nodes[cNode]["downNbrs"].update(downNbrs)
